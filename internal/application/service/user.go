@@ -43,8 +43,8 @@ func (s *UserService) Create(user *model.User) error {
 }
 
 
-func (s *UserService) Update(user *model.User) error {
-	if err := s.userRepository.Update(user); err != nil {
+func (s *UserService) Update(user *model.User,id uint) error {
+	if err := s.userRepository.Update(user,id); err != nil {
 		return err
 	}
 	return nil

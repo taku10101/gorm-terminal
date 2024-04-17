@@ -58,11 +58,17 @@ func (h *UserHandler) Create(c *gin.Context)  {
 
 func (h *UserHandler) Update(c *gin.Context) {
 	var user model.User
+	id := c.Param("id")
+	int_id, _ := strconv.Atoi(id)
+	
 	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := h.userService.Update(&user); err != nil {
+	if err := h.userService.Update(
+		&user,
+		uint(int_id),
+	); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})	
 		return
 	}
@@ -77,7 +83,7 @@ func (h *UserHandler) Delete(c *gin.Context) {
 		return
 	}
 	if err := h.userService.Delete(uint(int_id)); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})	
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"deleted": user_id})

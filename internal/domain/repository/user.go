@@ -41,15 +41,15 @@ func (r *UserRepository) Create(user *model.User) error {
 	return nil
 }
 
-func (r *UserRepository) Update(user *model.User) error {
-	if err := r.db.Save(user).Error; err != nil {
+func (r *UserRepository) Update(user *model.User,id uint) error {
+	if err := r.db.Model(&user).Where("id = ?", id).Updates(user).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
 func (r *UserRepository) Delete(id uint) error {
-	if err := r.db.Delete(id).Error; err != nil {
+	if err := r.db.Model(&model.User{}).Where("id = ?", id).Delete(&model.User{}).Error; err != nil {
 		return err
 	}
 	return nil
