@@ -19,66 +19,66 @@ func NewUserHandler(userService service.UserService) *UserHandler {
 	return &UserHandler{userService}
 }
 
-func (h *UserHandler) FindAll(c *gin.Context) ([]model.User, error) {
+func (h *UserHandler) FindAll(ctx *gin.Context) {
 	users, err := h.userService.FindAll()
-
 	if err != nil {
-		return nil, err
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})	
+		return
 	}
-	return users, nil
+	ctx.JSON(http.StatusOK, gin.H{"users": users})
 }
 
-func (h *UserHandler) FindByID(c *gin.Context)(*model.User, error) {
-	user_id := c.Param("id")
-
+func (h *UserHandler) FindByID(ctx *gin.Context) {
+	user_id := ctx.Param("id")
 	int_id, err := strconv.Atoi(user_id)
 	if err != nil {
-		return nil, err
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	user, err := h.userService.FindByID(uint(int_id))
 	if err != nil {
-		return nil, err
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})	
+		return
 	}
-	return user, nil
-
+	ctx.JSON(http.StatusOK, gin.H{"user": user})	
 }
 
-func (h *UserHandler) Create(c *gin.Context) error {
+func (h *UserHandler) Create(c *gin.Context)  {
 	var user model.User
 	if err := c.BindJSON(&user); err != nil {
-		return err
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	if err := h.userService.Create(&user); err != nil {
-		return err
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})	
+		return
 	}
-	c.JSON(http.StatusOK, gin.H{"user": user})
-
-
-	return nil
-
+	c.JSON(http.StatusOK, gin.H{"created": user})
 }
 
-func (h *UserHandler) Update(c *gin.Context) error {
+func (h *UserHandler) Update(c *gin.Context) {
 	var user model.User
 	if err := c.BindJSON(&user); err != nil {
-		return err
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	if err := h.userService.Update(&user); err != nil {
-		
-		return err
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})	
+		return
 	}
-	return nil
+	c.JSON(http.StatusOK, gin.H{"updated": user})
 }
-func (h *UserHandler) Delete(c *gin.Context) error {
+
+func (h *UserHandler) Delete(c *gin.Context) {
 	user_id := c.Param("id")
 	int_id, err := strconv.Atoi(user_id)
 	if err != nil {
-		return err
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	if err := h.userService.Delete(uint(int_id)); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})	
-
+		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
-	return nil
+	c.JSON(http.StatusOK, gin.H{"deleted": user_id})
 }

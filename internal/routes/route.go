@@ -7,13 +7,14 @@ import (
 )
 
 type Route struct {
-	router      *gin.Engine
 	userHandler *handler.UserHandler
 }
 
+
+
 // NewRoute はRouteのポインタを生成します。
-func NewRoute(router *gin.Engine, userHandler *handler.UserHandler) *Route {
-	return &Route{router, userHandler}
+func NewRoute( userHandler *handler.UserHandler) *Route {
+	return &Route{userHandler}
 }
 
 
@@ -21,5 +22,11 @@ func NewRoute(router *gin.Engine, userHandler *handler.UserHandler) *Route {
 func (r *Route) Setup() {
 	router := gin.Default()
 
-	router.GET("/users", r.userHandler.FindAll())
+	router.GET("/users", r.userHandler.FindAll)
+	router.GET("/users/:id", r.userHandler.FindByID)
+	router.POST("/users", r.userHandler.Create)
+	router.PUT("/users/:id", r.userHandler.Update)
+	router.DELETE("/users/:id", r.userHandler.Delete)
+
+	router.Run(":8080")
 }
